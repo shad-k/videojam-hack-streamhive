@@ -1,12 +1,14 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import { WagmiConfig, createClient, configureChains, mainnet } from "wagmi";
+import { WagmiConfig, createClient, configureChains } from "wagmi";
+import { filecoinHyperspace } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
+import Layout from "../components/layout";
 
 export const { chains, provider } = configureChains(
-  [mainnet],
+  [filecoinHyperspace],
   [publicProvider()]
 );
 
@@ -22,7 +24,9 @@ export default function App({
   return (
     <WagmiConfig client={client}>
       <SessionProvider session={pageProps.session} refetchInterval={0}>
-        <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </SessionProvider>
     </WagmiConfig>
   );

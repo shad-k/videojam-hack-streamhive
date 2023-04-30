@@ -3,17 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
+  /* --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --background-end-rgb: 255, 255, 255; */
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  /* :root {
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
-  }
+  } */
 }
 
 body {
@@ -26,21 +26,43 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-button {
-  margin: 0 0 0.75rem 0;
-  text-decoration: none;
-  padding: 0.7rem 1.4rem;
-  border: 1px solid #346df1;
-  background-color: #346df1;
-  color: #fff;
-  font-size: 1rem;
-  border-radius: 4px;
-  transition: all 0.1s ease-in-out;
-  font-weight: 500;
-  position: relative;
+.checkbox {
+  opacity: 0;
+  position: absolute;
 }
 
-button:hover {
+.checkbox-label {
+  background-color: #111;
+  width: 50px;
+  height: 26px;
+  border-radius: 50px;
+  position: relative;
+  padding: 5px;
   cursor: pointer;
-  box-shadow: inset 0 0 5rem rgb(0 0 0 / 20%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fa-moon {
+  color: #f1c40f;
+}
+
+.fa-sun {
+  color: #f39c12;
+}
+
+.checkbox-label .ball {
+  background-color: #fff;
+  width: 22px;
+  height: 22px;
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  border-radius: 50%;
+  transition: transform 0.2s linear;
+}
+
+.checkbox:checked + .checkbox-label .ball {
+  transform: translateX(24px);
 }
