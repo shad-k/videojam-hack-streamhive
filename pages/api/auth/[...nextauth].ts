@@ -1,7 +1,9 @@
 import NextAuth from "next-auth";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
+import prisma from "@/lib/prisma";
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -20,6 +22,14 @@ export default async function auth(req: any, res: any) {
           type: "text",
           placeholder: "0x0",
         },
+        name: {
+          label: "Name",
+          type: "text",
+        },
+        email: {
+          label: "Email",
+          type: "email",
+        },
       },
       async authorize(credentials) {
         try {
@@ -34,9 +44,35 @@ export default async function auth(req: any, res: any) {
             nonce: await getCsrfToken({ req }),
           });
 
+          let user = await prisma.user.findUnique({
+            where: {
+              address: siwe.address,
+            },
+          });
+
+          if (!user) {
+            user = await prisma.user.create({
+              data: {
+                name: credentials?.name,
+                email: credentials?.email,
+                address: siwe.address,
+              },
+            });
+            // create account
+            await prisma.account.create({
+              data: {
+                userId: user.id,
+                type: "credentials",
+                provider: "Ethereum",
+                providerAccountId: siwe.address,
+              },
+            });
+          }
+
           if (result.success) {
             return {
-              id: siwe.address,
+              id: user.id,
+              address: siwe.address,
             };
           }
           return null;
@@ -64,9 +100,14 @@ export default async function auth(req: any, res: any) {
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
       async session({ session, token }: { session: any; token: any }) {
-        session.address = token.sub;
-        session.user.name = token.sub;
-        session.user.image = "https://www.fillmurray.com/128/128";
+        const user = await prisma.user.findUnique({
+          where: {
+            id: token.sub,
+          },
+        });
+        session.address = user?.address;
+        session.user.name = user?.name;
+        session.user.email = user?.email;
         return session;
       },
     },

@@ -7,22 +7,18 @@ import Identicon from "identicon.js";
 import Image from "next/image";
 
 export default function NavUserProfile() {
-  const { status } = useSession();
   const { isConnected, address } = useAccount();
+  console.log(isConnected);
   const [avatar, setAvatar] = React.useState<string>();
 
   React.useEffect(() => {
-    if (isConnected && status === "authenticated" && address) {
+    if (isConnected && address) {
       setAvatar(new Identicon(address, 40).toString());
     }
-  }, [isConnected, status, address]);
+  }, [isConnected, address]);
 
   if (!isConnected) {
     return <ConnectWallet />;
-  }
-
-  if (status === "unauthenticated") {
-    return <SignIn />;
   }
 
   return (

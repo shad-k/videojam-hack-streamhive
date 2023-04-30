@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 export default function Footer() {
@@ -20,13 +21,6 @@ export default function Footer() {
           <br />
           Create, Stream, Connect and Sell
         </p>
-      </div>
-      <div>
-        <span className="footer-title">Services</span>
-        <a className="link link-hover">Branding</a>
-        <a className="link link-hover">Design</a>
-        <a className="link link-hover">Marketing</a>
-        <a className="link link-hover">Advertisement</a>
       </div>
       <div>
         <span className="footer-title">Company</span>

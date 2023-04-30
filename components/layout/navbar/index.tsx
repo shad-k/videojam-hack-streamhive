@@ -37,7 +37,10 @@ export default function Navbar() {
         </Link>
       </div>
       <NavUserProfile />
-      <div className="m-5">
+      <Link href="/sell" className="btn btn-primary mx-4">
+        Join as Seller
+      </Link>
+      <div className="mx-4">
         <div className="inline-block w-10">
           <input
             type="checkbox"
