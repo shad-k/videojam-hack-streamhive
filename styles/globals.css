@@ -42,14 +42,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.fa-moon {
-  color: #f1c40f;
-}
-
-.fa-sun {
-  color: #f39c12;
+  font-size: 14px;
 }
 
 .checkbox-label .ball {
