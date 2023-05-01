@@ -9,7 +9,7 @@ export default function LiveStream({ post }: { post: Post }) {
   const { peers } = usePeers();
 
   useEventListener("room:new-peer", () => {
-    alert("Peer joined");
+    console.log("Peer joined");
   });
 
   console.log(post.playbackId, peers);

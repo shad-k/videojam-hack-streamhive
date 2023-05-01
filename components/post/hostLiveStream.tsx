@@ -38,7 +38,7 @@ export default function HostLiveStream({ post }: { post: Post }) {
   });
 
   useEventListener("room:new-peer", () => {
-    alert("Peer joined");
+    console.log("Peer joined");
   });
 
   return (
