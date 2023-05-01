@@ -59,3 +59,11 @@ body {
 .checkbox:checked + .checkbox-label .ball {
   transform: translateX(24px);
 }
+
+.MuiOutlinedInput-root {
+  color: white;
+}
+
+[data-theme="cupcake"] .MuiOutlinedInput-root {
+  color: black;
+}

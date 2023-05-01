@@ -1,14 +1,13 @@
 import React from "react";
 import { useAccount } from "wagmi";
-import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import ConnectWallet from "@/components/wallet/connectWallet";
-import SignIn from "@/components/wallet/signin";
 import Identicon from "identicon.js";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function NavUserProfile() {
   const { isConnected, address } = useAccount();
-  console.log(isConnected);
   const [avatar, setAvatar] = React.useState<string>();
 
   React.useEffect(() => {
@@ -41,16 +40,12 @@ export default function NavUserProfile() {
           className="menu menu-compact dropdown-content mt-3 p-2 shadow rounded-box w-52"
         >
           <li>
-            <a className="justify-between">
-              Profile
-              <span className="badge">New</span>
-            </a>
+            <Link href="/dashboard" className="justify-between">
+              Dashboard
+            </Link>
           </li>
           <li>
-            <a>Settings</a>
-          </li>
-          <li>
-            <a>Logout</a>
+            <button onClick={() => signOut()}>Logout</button>
           </li>
         </ul>
       </div>

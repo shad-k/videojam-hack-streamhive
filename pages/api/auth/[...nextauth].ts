@@ -1,5 +1,4 @@
 import NextAuth from "next-auth";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
@@ -61,7 +60,7 @@ export default async function auth(req: any, res: any) {
             // create account
             await prisma.account.create({
               data: {
-                userId: user.id,
+                address: siwe.address,
                 type: "credentials",
                 provider: "Ethereum",
                 providerAccountId: siwe.address,
@@ -71,7 +70,6 @@ export default async function auth(req: any, res: any) {
 
           if (result.success) {
             return {
-              id: user.id,
               address: siwe.address,
             };
           }
@@ -102,7 +100,7 @@ export default async function auth(req: any, res: any) {
       async session({ session, token }: { session: any; token: any }) {
         const user = await prisma.user.findUnique({
           where: {
-            id: token.sub,
+            address: token.sub,
           },
         });
         session.address = user?.address;

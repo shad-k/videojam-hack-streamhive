@@ -1,4 +1,5 @@
 import type { AppProps } from "next/app";
+import { useHuddle01 } from "@huddle01/react";
 import { WagmiConfig, createClient, configureChains } from "wagmi";
 import { filecoinHyperspace } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
@@ -11,6 +12,7 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 
 import Layout from "../components/layout";
 import "@/styles/globals.css";
+import React from "react";
 
 export const { chains, provider } = configureChains(
   [filecoinHyperspace],
@@ -48,6 +50,14 @@ export default function App({
   Component,
   pageProps,
 }: AppProps<{ session: Session }>) {
+  const { initialize, isInitialized } = useHuddle01();
+  React.useEffect(() => {
+    (async () => {
+      if (!isInitialized) {
+        await initialize(process.env.NEXT_PUBLIC_YOUR_PROJECT_ID as string);
+      }
+    })();
+  }, [initialize, isInitialized]);
   return (
     <WagmiConfig client={client}>
       <SessionProvider session={pageProps.session} refetchInterval={0}>

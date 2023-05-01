@@ -12,9 +12,6 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   const address = JSON.parse(req.body).address;
-  console.log({
-    address,
-  });
   let user = await prisma.user.findUnique({
     where: {
       address: address,
@@ -26,9 +23,11 @@ export default async function handler(
         address: user.address,
         name: user.name,
         email: user.email,
+        followingCount: user.followingCount,
+        followerCount: user.followerCount,
       },
     });
   } else {
-    res.status(404);
+    res.status(404).end();
   }
 }

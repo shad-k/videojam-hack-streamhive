@@ -1,7 +1,14 @@
 import React, { FormEvent } from "react";
-import { useAccount, useNetwork, useSignMessage } from "wagmi";
+import {
+  useAccount,
+  useContractWrite,
+  useNetwork,
+  usePrepareContractWrite,
+  useSignMessage,
+} from "wagmi";
 import { getCsrfToken, signIn, useSession } from "next-auth/react";
 import { SiweMessage } from "siwe";
+import StreamHiveAbi from "@/contracts/StreamHive.json";
 
 import ConnectWallet from "@/components/wallet/connectWallet";
 import Link from "next/link";
@@ -14,6 +21,13 @@ export default function SellerLandingPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [doesUserExist, setUserExists] = React.useState(false);
 
+  const { config } = usePrepareContractWrite({
+    address: process.env.NEXT_PUBLIC_CONTRACT as `0x${string}`,
+    abi: StreamHiveAbi,
+    functionName: "createUser",
+  });
+  const { write: createUser } = useContractWrite(config);
+
   React.useEffect(() => {
     if (address) {
       (async () => {
@@ -24,7 +38,9 @@ export default function SellerLandingPage() {
           body: JSON.stringify({
             address,
           }),
-        }).then((res) => res.json());
+        })
+          .then((res) => res.json())
+          .catch((error) => console.log(error));
         if (user) {
           // if it does redirect to seller dashboard
           setUserExists(true);
@@ -52,6 +68,9 @@ export default function SellerLandingPage() {
       const signature = await signMessageAsync({
         message: message.prepareMessage(),
       });
+
+      await createUser?.();
+
       await signIn("credentials", {
         message: JSON.stringify(message),
         redirect: false,
@@ -114,7 +133,7 @@ export default function SellerLandingPage() {
         </form>
       )}
       {address && doesUserExist && (
-        <Link href="/sell/dashboard">Go To Dashboard</Link>
+        <Link href="/dashboard">Go To Dashboard</Link>
       )}
     </div>
   );
