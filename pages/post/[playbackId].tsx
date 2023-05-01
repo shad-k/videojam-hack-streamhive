@@ -8,7 +8,7 @@ import { useAccount } from "wagmi";
 export const getServerSideProps: GetServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
-  const playbackId = context.params.playbackId;
+  const playbackId = (context.params as any).playbackId;
   const post = await prisma.post.findFirst({
     where: {
       playbackId,
