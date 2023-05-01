@@ -80,7 +80,12 @@ export default function Dashboard() {
       </div>
       {address && (
         <div className="my-8 flex flex-col">
-          <h2 className="text-2xl font-semibold">Your Posts</h2>
+          <div className="flex items-center justify-between my-4">
+            <h2 className="text-2xl font-semibold">Your Posts</h2>
+            <Link href="/create" className="btn btn-accent btn-sm">
+              + Create New Post
+            </Link>
+          </div>
           {posts && posts.length === 0 ? (
             <div className="flex flex-col items-center justify-center my-20">
               <span className="text-lg">You have not created any posts.</span>

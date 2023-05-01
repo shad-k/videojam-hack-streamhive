@@ -1,9 +1,4 @@
 import React, { ChangeEvent, FormEvent } from "react";
-import {
-  LocalizationProvider,
-  MobileDateTimePicker,
-} from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useAccount, useContract, useSigner } from "wagmi";
 import axios from "axios";
 import lighthouse from "@lighthouse-web3/sdk";
@@ -12,12 +7,11 @@ import StreamHiveAbi from "@/contracts/StreamHive.json";
 import { ethers } from "ethers";
 import { useRouter } from "next/router";
 
-export default function LiveStreamForm() {
+export default function RecordedVideoForm() {
   const { address } = useAccount();
-  const [startTime, setStartTime] = React.useState<number | null>();
-  const [endTime, setEndTime] = React.useState<number | null>();
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
   const [thumbnailUrl, setThumbnailUrl] = React.useState<string>();
+  const [videoUrl, setVideoUrl] = React.useState<string>();
 
   const { data: signer } = useSigner();
 
@@ -28,6 +22,14 @@ export default function LiveStreamForm() {
   });
 
   const router = useRouter();
+
+  const uploadVideoFile = async (e: ChangeEvent) => {
+    const output = await lighthouse.upload(
+      e,
+      process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY as string
+    );
+    setVideoUrl(output.data.Hash);
+  };
 
   const uploadFile = async (e: ChangeEvent) => {
     const output = await lighthouse.upload(
@@ -51,40 +53,29 @@ export default function LiveStreamForm() {
       alert("Please enter a stream title");
       return;
     }
-    if (!startTime) {
-      alert("Please select a stream start time");
-      return;
-    }
-    if (!endTime) {
-      alert("Please select a stream end time");
+    if (!videoUrl) {
+      alert("Please select a video file");
       return;
     }
 
     try {
-      const createStreamRes = await axios.post("/api/huddle01/create-room", {
-        title,
-        description,
-        startTime,
-        endTime,
-        hostWallets: [address],
-      });
-      const playbackId = createStreamRes.data.stream.data.roomId;
+      const playbackId = videoUrl;
 
       if (!contract) {
         console.log("contract not present");
         return;
       }
 
-      await contract.createPost(startTime, endTime, playbackId, true);
-      contract.on("PostCreated", async (postId) => {
+      const filter = contract.filters.PostCreated(null, address);
+
+      await contract.createPost(Date.now(), Date.now(), playbackId, false);
+      contract.once(filter, async (postId) => {
         await axios.post("/api/posts/create", {
           postId: postId.toNumber(),
           title,
           description,
-          startTime,
-          endTime,
           playbackId,
-          isLiveStream: true,
+          isLiveStream: false,
           creatorAddress: address,
           thumbnailUrl,
         });
@@ -122,6 +113,19 @@ export default function LiveStreamForm() {
 
       <div className="form-control w-full">
         <label className="label">
+          <span className="label-text">Video file:</span>
+        </label>
+
+        <input
+          type="file"
+          name="videoFile"
+          accept={"video/*"}
+          className="file-input w-full"
+          onChange={(e) => uploadVideoFile(e)}
+        />
+      </div>
+      <div className="form-control w-full">
+        <label className="label">
           <span className="label-text">Thumbnail image:</span>
         </label>
 
@@ -131,28 +135,6 @@ export default function LiveStreamForm() {
           className="file-input w-full"
           onChange={(e) => uploadFile(e)}
         />
-      </div>
-      <div className="form-control w-full text-info-content">
-        <label className="label">
-          <span className="label-text">Start Date and Time</span>
-        </label>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <MobileDateTimePicker
-            disablePast
-            onChange={(val: Date | null) => setStartTime(val?.valueOf())}
-          />
-        </LocalizationProvider>
-      </div>
-      <div className="form-control w-full text-primary-content">
-        <label className="label">
-          <span className="label-text">End Date and Time</span>
-        </label>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <MobileDateTimePicker
-            onChange={(val: Date | null) => setEndTime(val?.valueOf())}
-            disablePast
-          />
-        </LocalizationProvider>
       </div>
       <button
         type="submit"

@@ -3,13 +3,13 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "postId",
         "type": "uint256"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "creator",
         "type": "address"
@@ -50,9 +50,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "bytes32",
+        "internalType": "string",
         "name": "_playbackId",
-        "type": "bytes32"
+        "type": "string"
       },
       {
         "internalType": "bool",
@@ -196,9 +196,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "bytes32",
+        "internalType": "string",
         "name": "playbackId",
-        "type": "bytes32"
+        "type": "string"
       },
       {
         "internalType": "bool",

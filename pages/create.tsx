@@ -1,4 +1,5 @@
 import LiveStreamForm from "@/components/create/liveStreamForm";
+import RecordedVideoForm from "@/components/create/recordedVideoForm";
 import React from "react";
 
 export default function Create() {
@@ -21,7 +22,13 @@ export default function Create() {
           Upload a Video
         </a>
       </div>
-      {isLiveStream ? <LiveStreamForm /> : <div>Video</div>}
+      {isLiveStream ? (
+        <LiveStreamForm />
+      ) : (
+        <div>
+          <RecordedVideoForm />
+        </div>
+      )}
     </div>
   );
 }

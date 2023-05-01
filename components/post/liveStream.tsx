@@ -24,10 +24,10 @@ export default function LiveStream({ post }: { post: Post }) {
         Join Room
       </button>
       {Object.values(peers).map((peer) => {
-        if (peer.role !== "host") {
+        if (!peer.cam) {
           return null;
         }
-        return <Video key={peer.peerId} peerId={peer.peerId} debug />;
+        return <Video key={peer.peerId} peerId={peer.peerId} />;
       })}
     </>
   );

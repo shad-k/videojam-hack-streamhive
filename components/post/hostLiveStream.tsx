@@ -2,6 +2,7 @@ import React from "react";
 import { Post } from "@prisma/client";
 import {
   useAudio,
+  useLivestream,
   useLobby,
   usePeers,
   useRecording,
@@ -36,6 +37,15 @@ export default function HostLiveStream({ post }: { post: Post }) {
     console.log(stream, videoRef.current);
     if (stream && videoRef.current) videoRef.current.srcObject = stream;
   });
+
+  const { startLivestream, stopLivestream } = useLivestream();
+
+  React.useEffect(() => {
+    if (stream && isProducing) {
+      videoRef.current.srcObject = stream;
+      startLivestream("l", "l", "twitch");
+    }
+  }, [isProducing, stream, startLivestream]);
 
   useEventListener("room:new-peer", () => {
     console.log("Peer joined");

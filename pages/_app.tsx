@@ -9,6 +9,8 @@ import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+import { LivepeerConfig } from "@livepeer/react";
+import LivepeerClient from "@/lib/livepeer";
 
 import Layout from "../components/layout";
 import "@/styles/globals.css";
@@ -60,11 +62,13 @@ export default function App({
   }, [initialize, isInitialized]);
   return (
     <WagmiConfig client={client}>
-      <SessionProvider session={pageProps.session} refetchInterval={0}>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </SessionProvider>
+      <LivepeerConfig client={LivepeerClient}>
+        <SessionProvider session={pageProps.session} refetchInterval={0}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </SessionProvider>
+      </LivepeerConfig>
     </WagmiConfig>
   );
 }

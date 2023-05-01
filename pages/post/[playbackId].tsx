@@ -1,5 +1,6 @@
 import HostLiveStream from "@/components/post/hostLiveStream";
 import LiveStream from "@/components/post/liveStream";
+import RecordedVideo from "@/components/post/recordedVideo";
 import prisma from "@/lib/prisma";
 import { Post } from "@prisma/client";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
@@ -34,11 +35,13 @@ export const getServerSideProps: GetServerSideProps = async (
 export default function PostDetail({ post }: { post: Post }) {
   const { address } = useAccount();
 
-  if (post.creatorAddress === address) {
+  if (post && post.isLivestream && post.creatorAddress === address) {
     return <HostLiveStream post={post} />;
   }
   if (post && post.isLivestream) {
     return <LiveStream post={post} />;
+  } else {
+    return <RecordedVideo post={post} />;
   }
   return null;
 }
