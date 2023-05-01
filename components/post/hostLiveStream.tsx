@@ -42,7 +42,7 @@ export default function HostLiveStream({ post }: { post: Post }) {
 
   React.useEffect(() => {
     if (stream && isProducing) {
-      videoRef.current.srcObject = stream;
+      (videoRef.current as any).srcObject = stream;
       startLivestream("l", "l", "twitch");
     }
   }, [isProducing, stream, startLivestream]);
