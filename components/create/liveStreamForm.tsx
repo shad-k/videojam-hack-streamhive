@@ -9,7 +9,6 @@ import axios from "axios";
 import lighthouse from "@lighthouse-web3/sdk";
 
 import StreamHiveAbi from "@/contracts/StreamHive.json";
-import { ethers } from "ethers";
 import { useRouter } from "next/router";
 
 export default function LiveStreamForm() {
