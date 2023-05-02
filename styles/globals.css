@@ -61,9 +61,9 @@ body {
 }
 
 .MuiOutlinedInput-root {
-  color: white;
+  color: white !important;
 }
 
 [data-theme="cupcake"] .MuiOutlinedInput-root {
-  color: black;
+  color: black !important;
 }

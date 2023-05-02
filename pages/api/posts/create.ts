@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-import axios from "axios";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -22,6 +21,7 @@ export default async function handler(
     isLiveStream: isLivestream,
     creatorAddress,
     thumbnailUrl,
+    productLink,
   } = req.body;
   try {
     await prisma.post.create({
@@ -35,6 +35,7 @@ export default async function handler(
         isLivestream,
         creatorAddress,
         thumbnailUrl,
+        productLink,
       },
     });
 

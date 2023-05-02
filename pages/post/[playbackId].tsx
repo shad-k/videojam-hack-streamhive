@@ -14,7 +14,29 @@ export const getServerSideProps: GetServerSideProps = async (
     where: {
       playbackId,
     },
+    select: {
+      postId: true,
+      title: true,
+      description: true,
+      startTime: true,
+      endTime: true,
+      playbackId: true,
+      isLivestream: true,
+      creatorAddress: true,
+      thumbnailUrl: true,
+      productLink: true,
+    },
   });
+
+  console.log({ post, playbackId });
+
+  if (!post) {
+    return {
+      props: {
+        post: {},
+      },
+    };
+  }
 
   return {
     props: {
@@ -28,6 +50,7 @@ export const getServerSideProps: GetServerSideProps = async (
         isLivestream: post?.isLivestream,
         creatorAddress: post?.creatorAddress,
         thumbnailUrl: post?.thumbnailUrl,
+        productLink: post?.productLink,
       },
     },
   };
@@ -40,7 +63,7 @@ export default function PostDetail({ post }: { post: Post }) {
   }
   if (post && post.isLivestream) {
     return <LiveStream post={post} />;
-  } else {
+  } else if (post) {
     return <RecordedVideo post={post} />;
   }
   return null;

@@ -48,6 +48,7 @@ export default function RecordedVideoForm() {
 
     const title = formEl.streamTitle.value;
     const description = formEl.description.value;
+    const productLink = formEl.productLink.value;
 
     if (!title) {
       alert("Please enter a stream title");
@@ -55,6 +56,15 @@ export default function RecordedVideoForm() {
     }
     if (!videoUrl) {
       alert("Please select a video file");
+      return;
+    }
+
+    if (description.length > 100) {
+      alert("Description can only be 100 characters long");
+    }
+
+    if (!productLink) {
+      alert("Please provide a product link");
       return;
     }
 
@@ -68,7 +78,13 @@ export default function RecordedVideoForm() {
 
       const filter = contract.filters.PostCreated(null, address);
 
-      await contract.createPost(Date.now(), Date.now(), playbackId, false);
+      await contract.createPost(
+        Date.now(),
+        Date.now(),
+        playbackId,
+        false,
+        productLink
+      );
       contract.once(filter, async (postId) => {
         await axios.post("/api/posts/create", {
           postId: postId.toNumber(),
@@ -78,6 +94,7 @@ export default function RecordedVideoForm() {
           isLiveStream: false,
           creatorAddress: address,
           thumbnailUrl,
+          productLink,
         });
 
         router.push("/dashboard");
@@ -88,7 +105,7 @@ export default function RecordedVideoForm() {
   };
 
   return (
-    <form className="my-8 w-full" onSubmit={createPost}>
+    <form className="my-8 w-full space-y-4" onSubmit={createPost}>
       <div className="form-control w-full">
         <label className="label">
           <span className="label-text">Live stream title:</span>
@@ -108,6 +125,7 @@ export default function RecordedVideoForm() {
           name="description"
           className="textarea textarea-bordered h-24"
           placeholder="Description"
+          maxLength={100}
         ></textarea>
       </div>
 
@@ -122,6 +140,17 @@ export default function RecordedVideoForm() {
           accept={"video/*"}
           className="file-input w-full"
           onChange={(e) => uploadVideoFile(e)}
+        />
+      </div>
+      <div className="form-control w-full">
+        <label className="label">
+          <span className="label-text">Product link:</span>
+        </label>
+        <input
+          type="text"
+          name="productLink"
+          placeholder="https://"
+          className="input input-bordered w-full"
         />
       </div>
       <div className="form-control w-full">

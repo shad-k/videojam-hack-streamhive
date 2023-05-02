@@ -71,6 +71,7 @@ model Post {
   title          String
   description    String
   thumbnailUrl   String?
+  productLink     String
 }
 
 model VerificationToken {

@@ -4,12 +4,13 @@ export default function WalletConnectors() {
   const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
   return (
-    <div>
+    <div className="flex flex-col space-y-2">
       {connectors.map((connector) => (
         <button
           disabled={!connector.ready}
           key={connector.id}
           onClick={() => connect({ connector })}
+          className="btn"
         >
           {connector.name}
           {!connector.ready && " (unsupported)"}

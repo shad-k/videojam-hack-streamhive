@@ -12,7 +12,20 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   if (req.method === "GET") {
-    const posts = await prisma.post.findMany();
+    const posts = await prisma.post.findMany({
+      select: {
+        postId: true,
+        title: true,
+        description: true,
+        startTime: true,
+        endTime: true,
+        playbackId: true,
+        isLivestream: true,
+        creatorAddress: true,
+        thumbnailUrl: true,
+        productLink: true,
+      },
+    });
     res.status(200).json({
       posts,
     });
@@ -32,6 +45,7 @@ export default async function handler(
         isLivestream: true,
         creatorAddress: true,
         thumbnailUrl: true,
+        productLink: true,
       },
       where: {
         creatorAddress: address,

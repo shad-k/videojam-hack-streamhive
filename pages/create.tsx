@@ -8,7 +8,7 @@ export default function Create() {
     <div>
       <h1 className="text-3xl font-bold">Create a new Post</h1>
 
-      <div className="tabs tabs-boxed mt-10 border border-slate-800">
+      <div className="tabs tabs-boxed justify-center mt-10 border border-slate-800">
         <a
           className={`tab ${isLiveStream ? "tab-active" : ""}`}
           onClick={() => setIsLiveStream(true)}

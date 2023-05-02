@@ -46,6 +46,7 @@ export default function LiveStreamForm() {
 
     const title = formEl.streamTitle.value;
     const description = formEl.description.value;
+    const productLink = formEl.productLink.value;
 
     if (!title) {
       alert("Please enter a stream title");
@@ -57,6 +58,10 @@ export default function LiveStreamForm() {
     }
     if (!endTime) {
       alert("Please select a stream end time");
+      return;
+    }
+    if (!productLink) {
+      alert("Please provide a product link");
       return;
     }
 
@@ -75,8 +80,17 @@ export default function LiveStreamForm() {
         return;
       }
 
-      await contract.createPost(startTime, endTime, playbackId, true);
-      contract.on("PostCreated", async (postId) => {
+      const filter = contract.filters.PostCreated(null, address);
+
+      await contract.createPost(
+        startTime,
+        endTime,
+        playbackId,
+        true,
+        productLink
+      );
+
+      contract.once(filter, async (postId) => {
         await axios.post("/api/posts/create", {
           postId: postId.toNumber(),
           title,
@@ -87,6 +101,7 @@ export default function LiveStreamForm() {
           isLiveStream: true,
           creatorAddress: address,
           thumbnailUrl,
+          productLink,
         });
 
         router.push("/dashboard");
@@ -97,7 +112,7 @@ export default function LiveStreamForm() {
   };
 
   return (
-    <form className="my-8 w-full" onSubmit={createPost}>
+    <form className="my-8 w-full space-y-4" onSubmit={createPost}>
       <div className="form-control w-full">
         <label className="label">
           <span className="label-text">Live stream title:</span>
@@ -117,7 +132,19 @@ export default function LiveStreamForm() {
           name="description"
           className="textarea textarea-bordered h-24"
           placeholder="Description"
+          maxLength={100}
         ></textarea>
+      </div>
+      <div className="form-control w-full">
+        <label className="label">
+          <span className="label-text">Product link:</span>
+        </label>
+        <input
+          type="text"
+          name="productLink"
+          placeholder="https://"
+          className="input input-bordered w-full"
+        />
       </div>
 
       <div className="form-control w-full">
