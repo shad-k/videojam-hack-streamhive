@@ -75,3 +75,11 @@ body {
   max-width: 820px !important;
   margin: auto;
 }
+
+[data-theme="cupcake"] .logo-white {
+  display: none;
+}
+
+[data-theme="night"] .logo-black {
+  display: none;
+}
