@@ -5,6 +5,8 @@ import React from "react";
 import { useAccount, useContract, useSigner } from "wagmi";
 import StreamHiveAbi from "@/contracts/StreamHive.json";
 import axios from "axios";
+import Image from "next/image";
+import Identicon from "identicon.js";
 
 function PosterImage({ thumbnail }: { thumbnail: string | null }) {
   if (!thumbnail) {
@@ -22,6 +24,14 @@ export default function RecordedVideo({ post }: { post: Post }) {
 
   const { data: signer } = useSigner();
   const { address } = useAccount();
+
+  const [avatar, setAvatar] = React.useState<string>();
+
+  React.useEffect(() => {
+    if (post.creatorAddress) {
+      setAvatar(new Identicon(post.creatorAddress, 40).toString());
+    }
+  }, [post]);
 
   const contract = useContract({
     address: process.env.NEXT_PUBLIC_CONTRACT as `0x${string}`,
@@ -87,35 +97,83 @@ export default function RecordedVideo({ post }: { post: Post }) {
   };
 
   return (
-    <div>
-      <Player
-        title={post.title}
-        src={"https://gateway.lighthouse.storage/ipfs/" + post.playbackId}
-        showPipButton
-        controls={{
-          autohide: 3000,
-        }}
-        poster={<PosterImage thumbnail={post.thumbnailUrl} />}
-        objectFit="cover"
-        priority
-        autoPlay
-        muted
-      />
-      <Link href={post.productLink} target="_blank" className="btn btn-lg">
-        Buy Now
-      </Link>
-      <div>
-        {post.creatorAddress}
-        {creatorFollowed === false && post.creatorAddress !== address && (
-          <button onClick={followUser}>Follow user</button>
-        )}
-      </div>
-      <div>
-        {postLiked === false && post.creatorAddress !== address && (
-          <button className="btn btn-sm" onClick={likeStream}>
-            Like
+    <div className="w-full">
+      <div className="flex items-center space-x-4 mb-4">
+        <div className="h-10 w-10 rounded-full overflow-hidden">
+          <Image
+            width="40"
+            height="40"
+            src={`data:image/png;base64,${avatar}`}
+            alt={post.title}
+          />
+        </div>
+        <span>
+          {post.creatorAddress.substring(0, 5)}...
+          {post.creatorAddress.substring(post.creatorAddress.length - 5)}
+        </span>
+        {post.creatorAddress !== address && (
+          <button
+            className="btn btn-xs btn-success flex-1 max-w-[150px] disabled:text-white/60 disabled:bg-white/10"
+            onClick={followUser}
+            disabled={creatorFollowed === true}
+          >
+            {creatorFollowed === false ? "Follow user" : "Followed"}
           </button>
         )}
+      </div>
+
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex-1 flex flex-col">
+          <h1 className="mb-1 text-3xl">{post.title}</h1>
+          <h4>{post.description}</h4>
+        </div>
+        {post.creatorAddress !== address && (
+          <button
+            className="btn btn-circle mb-4 disabled:bg-white/10"
+            onClick={likeStream}
+            disabled={postLiked === true}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill={postLiked === false ? "none" : "red"}
+              viewBox="0 0 24 24"
+              stroke="red"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      <Link
+        href={post.productLink}
+        target="_blank"
+        className="btn btn-info max-w-xs mb-4"
+      >
+        Buy Now
+      </Link>
+
+      <div className="min-h-[400px] relative recorded-video max-h-[500px] w-full mb-4 flex items-end">
+        <Player
+          title={post.title}
+          src={"https://gateway.lighthouse.storage/ipfs/" + post.playbackId}
+          showPipButton
+          controls={{
+            autohide: 3000,
+          }}
+          aspectRatio="16to9"
+          poster={<PosterImage thumbnail={post.thumbnailUrl} />}
+          priority
+          autoPlay
+          muted
+          objectFit="contain"
+        />
       </div>
     </div>
   );

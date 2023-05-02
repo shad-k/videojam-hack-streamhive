@@ -6,11 +6,16 @@ import StreamHiveAbi from "@/contracts/StreamHive.json";
 import Link from "next/link";
 import { useAccount, useContract, useSigner } from "wagmi";
 import axios from "axios";
+import Image from "next/image";
+import Identicon from "identicon.js";
 
 export default function LiveStream({ post }: { post: Post }) {
   const { joinLobby, leaveLobby, isLoading, isLobbyJoined, error } = useLobby();
   const { joinRoom, leaveRoom, isRoomJoined } = useRoom();
   const { peers } = usePeers();
+
+  const [inLobby, setInLobby] = React.useState<boolean>(false);
+  const [inRoom, setInRoom] = React.useState<boolean>(false);
 
   const [creatorFollowed, setCreatorFollowed] = React.useState<boolean>();
   const [postLiked, setPostLiked] = React.useState<boolean>();
@@ -18,6 +23,14 @@ export default function LiveStream({ post }: { post: Post }) {
   const { address } = useAccount();
 
   const { data: signer } = useSigner();
+
+  const [avatar, setAvatar] = React.useState<string>();
+
+  React.useEffect(() => {
+    if (post.creatorAddress) {
+      setAvatar(new Identicon(post.creatorAddress, 40).toString());
+    }
+  }, [post]);
 
   const contract = useContract({
     address: process.env.NEXT_PUBLIC_CONTRACT as `0x${string}`,
@@ -62,7 +75,6 @@ export default function LiveStream({ post }: { post: Post }) {
     const filter = contract.filters.UserFollowed(address, post.creatorAddress);
     await contract.followUser(post.creatorAddress);
     contract.once(filter, async () => {
-      console.log("calling api");
       await axios.post("/api/user/follow", {
         address,
         creatorAddress: post.creatorAddress,
@@ -82,41 +94,141 @@ export default function LiveStream({ post }: { post: Post }) {
   };
 
   return (
-    <div>
-      <button
-        onClick={() => joinLobby.isCallable && joinLobby(post.playbackId)}
+    <div className="w-full">
+      <div className="flex items-center space-x-4 mb-4">
+        <div className="h-10 w-10 rounded-full overflow-hidden">
+          <Image
+            width="40"
+            height="40"
+            src={`data:image/png;base64,${avatar}`}
+            alt={post.title}
+          />
+        </div>
+        <span>
+          {post.creatorAddress.substring(0, 5)}...
+          {post.creatorAddress.substring(post.creatorAddress.length - 5)}
+        </span>
+        {post.creatorAddress !== address && (
+          <button
+            className="btn btn-xs btn-success flex-1 max-w-[150px] disabled:text-white/60 disabled:bg-white/10"
+            onClick={followUser}
+            disabled={creatorFollowed === true}
+          >
+            {creatorFollowed === false ? "Follow user" : "Followed"}
+          </button>
+        )}
+      </div>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex-1 flex flex-col">
+          <h1 className="mb-1 text-3xl">{post.title}</h1>
+          <h4>{post.description}</h4>
+        </div>
+        {post.creatorAddress !== address && (
+          <button
+            className="btn btn-circle mb-4 disabled:bg-white/10"
+            onClick={likeStream}
+            disabled={postLiked === true}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill={postLiked === false ? "none" : "red"}
+              viewBox="0 0 24 24"
+              stroke="red"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      <Link
+        href={post.productLink}
+        target="_blank"
+        className="btn btn-info max-w-xs mb-4"
       >
-        Join Lobby
-      </button>
-      <button onClick={() => joinRoom.isCallable && joinRoom()}>
-        Join Room
-      </button>
-      {Object.values(peers).map((peer) => {
-        if (!peer.cam) {
-          return null;
-        }
-        return <Video key={peer.peerId} peerId={peer.peerId} />;
-      })}
+        Buy Now
+      </Link>
+
+      <div className="min-h-[400px] max-h-[500px] w-full bg-black mb-4">
+        {Object.values(peers).map((peer) => {
+          if (!peer.cam) {
+            return null;
+          }
+          return (
+            <Video
+              key={peer.peerId}
+              peerId={peer.peerId}
+              className="h-full w-full"
+            />
+          );
+        })}
+      </div>
       {Object.values(peers).map((peer) => {
         if (!peer.mic) {
           return null;
         }
         return <Audio key={peer.peerId} peerId={peer.peerId} />;
       })}
-      <Link href={post.productLink} target="_blank" className="btn btn-lg">
-        Buy Now
-      </Link>
-      <div>
-        {post.creatorAddress}
-        {creatorFollowed === false && post.creatorAddress !== address && (
-          <button onClick={followUser}>Follow user</button>
-        )}
-      </div>
-      <div>
-        {postLiked === false && post.creatorAddress !== address && (
-          <button className="btn btn-sm" onClick={likeStream}>
-            Like
-          </button>
+
+      <div className="flex flex-col space-y-4">
+        {inLobby ? (
+          <div className="w-full flex flex-wrap items-center space-x-2">
+            <button
+              onClick={() => {
+                leaveLobby();
+                setInLobby(false);
+                console.log("sh: left lobby");
+              }}
+              className="btn btn-error"
+            >
+              Leave Lobby
+            </button>
+
+            {inRoom ? (
+              <button
+                onClick={() => {
+                  leaveRoom();
+                  console.log("sh: leave room");
+                  setInRoom(false);
+                }}
+                className="btn btn-accent"
+                disabled={!leaveRoom.isCallable}
+              >
+                Leave Room
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  joinRoom();
+                  console.log("sh: join room");
+                  setInRoom(true);
+                }}
+                className="btn btn-accent"
+                disabled={!joinRoom.isCallable}
+              >
+                Join Room
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="w-full flex flex-wrap items-center space-x-2">
+            <button
+              onClick={() => {
+                joinLobby(post.playbackId);
+                setInLobby(true);
+                console.log("sh: joined lobby");
+              }}
+              className="btn btn-accent"
+            >
+              Join Lobby
+            </button>
+          </div>
         )}
       </div>
     </div>
