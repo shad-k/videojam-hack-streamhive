@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 import Image from "next/image";
 import { Post, User } from "@prisma/client";
 import Link from "next/link";
+import Card from "@/components/post/card";
 
 export default function Dashboard() {
   const { isConnected, address } = useAccount();
@@ -97,21 +98,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-3 gap-3">
               {posts &&
                 posts.map((post) => {
-                  return (
-                    <Link href={`/post/${post.playbackId}`} key={post.postId}>
-                      {post.thumbnailUrl && (
-                        <div className="h-40 w-40 rounded-sm">
-                          <img
-                            src={post.thumbnailUrl}
-                            alt=""
-                            width="160"
-                            height="160"
-                          />
-                        </div>
-                      )}
-                      {post.title}
-                    </Link>
-                  );
+                  return <Card key={post.postId} post={post} />;
                 })}
             </div>
           )}

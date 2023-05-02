@@ -24,6 +24,8 @@ export default function RecordedVideo({ post }: { post: Post }) {
       poster={<PosterImage thumbnail={post.thumbnailUrl} />}
       objectFit="cover"
       priority
+      autoPlay
+      muted
     />
   );
 }

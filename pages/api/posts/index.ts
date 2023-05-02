@@ -11,6 +11,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+  if (req.method === "GET") {
+    const posts = await prisma.post.findMany();
+    res.status(200).json({
+      posts,
+    });
+    return;
+  }
+
   try {
     const address = JSON.parse(req.body).address;
     const posts = await prisma.post.findMany({
