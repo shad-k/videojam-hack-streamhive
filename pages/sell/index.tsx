@@ -1,10 +1,10 @@
 import React, { FormEvent } from "react";
 import {
   useAccount,
-  useContractWrite,
+  useContract,
   useNetwork,
-  usePrepareContractWrite,
   useSignMessage,
+  useSigner,
 } from "wagmi";
 import { getCsrfToken, signIn, useSession } from "next-auth/react";
 import { SiweMessage } from "siwe";
@@ -20,13 +20,15 @@ export default function SellerLandingPage() {
   const { address } = useAccount();
   const [isLoading, setIsLoading] = React.useState(false);
   const [doesUserExist, setUserExists] = React.useState(false);
+  const [signingIn, setIsSigning] = React.useState(false);
 
-  const { config } = usePrepareContractWrite({
+  const { data: signer } = useSigner();
+
+  const contract = useContract({
     address: process.env.NEXT_PUBLIC_CONTRACT as `0x${string}`,
     abi: StreamHiveAbi,
-    functionName: "createUser",
+    signerOrProvider: signer,
   });
-  const { write: createUser } = useContractWrite(config);
 
   React.useEffect(() => {
     if (address) {
@@ -56,6 +58,7 @@ export default function SellerLandingPage() {
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
     try {
+      setIsSigning(true);
       const message = new SiweMessage({
         domain: window.location.host,
         address: address,
@@ -69,7 +72,13 @@ export default function SellerLandingPage() {
         message: message.prepareMessage(),
       });
 
-      await createUser?.();
+      if (!contract) {
+        alert("Something went wrong");
+        return;
+      }
+
+      const tx = await contract.createUser();
+      await tx.wait(1);
 
       await signIn("credentials", {
         message: JSON.stringify(message),
@@ -80,6 +89,7 @@ export default function SellerLandingPage() {
       });
 
       setUserExists(true);
+      setIsSigning(false);
     } catch (error) {
       window.alert(error);
     }
@@ -130,13 +140,18 @@ export default function SellerLandingPage() {
                 className="input input-secondary input-bordered w-full"
               />
             </div>
-            <button type="submit" className="btn">
+            <button
+              type="submit"
+              className={`btn ${signingIn ? "loading" : ""}`}
+            >
               Sign In as Seller
             </button>
           </form>
         )}
         {address && doesUserExist && (
-          <Link href="/dashboard">Go To Dashboard</Link>
+          <Link href="/dashboard" className="btn btn-accent">
+            Go To Dashboard
+          </Link>
         )}
       </div>
       <div>
@@ -150,7 +165,8 @@ export default function SellerLandingPage() {
             Upload fun videos to market your products better
           </div>
           <div className="flex items-center justify-center rounded-lg bg-warning p-6 text-white">
-            Create your own ERC-20 tokens and airdrop to your buyers/followers
+            Create your own ERC-20 tokens and airdrop to your buyers and
+            followers
           </div>
         </div>
       </div>
