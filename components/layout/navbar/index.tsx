@@ -60,8 +60,8 @@ export default function Navbar() {
     <div className="navbar px-6 py-4">
       <div className="flex-1">
         <Link href="/" className="text-2xl font-semibold text-accent">
-          <img src="logo-white.png" className="h-10 logo-white" alt="" />
-          <img src="logo-black.png" className="h-10 logo-black" alt="" />
+          <img src="/logo-white.png" className="h-10 logo-white" alt="" />
+          <img src="/logo-black.png" className="h-10 logo-black" alt="" />
         </Link>
       </div>
       {address && !userSignedIn && (
