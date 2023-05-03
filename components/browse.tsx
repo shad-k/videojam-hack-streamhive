@@ -12,13 +12,19 @@ export default function Browse() {
     })();
   }, []);
   return (
-    <div className="w-full">
+    <div className="w-full max-w-[1280px] mx-auto">
       <h1 className="my-8 text-3xl">Latest Posts</h1>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-1">
         {posts.map((post) => {
           return <Card key={post.postId} post={post} />;
         })}
       </div>
+      {posts.length === 0 && (
+        <div className="flex items-center justify-center italic w-full text-error">
+          Our creators are hard at work curating products and creating new
+          videos for you. Please come back later or Join us as a seller
+        </div>
+      )}
     </div>
   );
 }
