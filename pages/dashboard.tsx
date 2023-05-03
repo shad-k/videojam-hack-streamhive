@@ -33,7 +33,7 @@ export default function Dashboard() {
   const contract = useContract({
     address: process.env.NEXT_PUBLIC_CONTRACT as `0x${string}`,
     abi: StreamHiveAbi,
-    signerOrProvider: provider,
+    signerOrProvider: signer,
   });
   const erc20Contract = useContract({
     address: tokenAddress,
