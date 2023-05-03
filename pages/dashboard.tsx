@@ -231,9 +231,9 @@ export default function Dashboard() {
         <div className="stats bg-info text-info-content w-1/4">
           {user && (
             <div className="stat place-items-center text-success-content">
-              <div className="stat-title text-success-content">Following</div>
+              <div className="stat-title text-success-content">Followers</div>
               <div className="stat-value text-success-content">
-                {stats?.followingCount}
+                {stats?.followersCount}
               </div>
             </div>
           )}
