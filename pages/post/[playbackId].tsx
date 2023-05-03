@@ -28,8 +28,6 @@ export const getServerSideProps: GetServerSideProps = async (
     },
   });
 
-  console.log({ post, playbackId });
-
   if (!post) {
     return {
       props: {

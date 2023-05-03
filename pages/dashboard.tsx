@@ -109,7 +109,9 @@ export default function Dashboard() {
     if (contract && address) {
       (async () => {
         const tokenAddress = await contract.creatorTokens(address);
-        setTokenAddress(tokenAddress);
+        if (tokenAddress !== ethers.constants.AddressZero) {
+          setTokenAddress(tokenAddress);
+        }
       })();
     }
   }, [contract, address]);

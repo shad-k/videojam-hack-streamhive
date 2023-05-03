@@ -12,22 +12,26 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   const address = JSON.parse(req.body).address;
-  let user = await prisma.user.findUnique({
-    where: {
-      address: address,
-    },
-  });
-  if (user) {
-    res.status(200).json({
-      user: {
-        address: user.address,
-        name: user.name,
-        email: user.email,
-        followingCount: user.followingCount,
-        followerCount: user.followerCount,
+  try {
+    let user = await prisma.user.findUnique({
+      where: {
+        address: address,
       },
     });
-  } else {
-    res.status(404).end();
+    if (user) {
+      res.status(200).json({
+        user: {
+          address: user.address,
+          name: user.name,
+          email: user.email,
+          followingCount: user.followingCount,
+          followerCount: user.followerCount,
+        },
+      });
+    } else {
+      res.status(404).end();
+    }
+  } catch (error) {
+    console.log(error);
   }
 }

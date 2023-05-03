@@ -108,7 +108,7 @@ export default function LiveStream({ post }: { post: Post }) {
           {post.creatorAddress.substring(0, 5)}...
           {post.creatorAddress.substring(post.creatorAddress.length - 5)}
         </span>
-        {post.creatorAddress !== address && (
+        {post.creatorAddress !== address && address && (
           <button
             className="btn btn-xs btn-success flex-1 max-w-[150px] disabled:text-white/60 disabled:bg-white/10"
             onClick={followUser}
@@ -123,7 +123,7 @@ export default function LiveStream({ post }: { post: Post }) {
           <h1 className="mb-1 text-3xl">{post.title}</h1>
           <h4>{post.description}</h4>
         </div>
-        {post.creatorAddress !== address && (
+        {post.creatorAddress !== address && address && (
           <button
             className="btn btn-circle mb-4 disabled:bg-white/10"
             onClick={likeStream}
@@ -164,7 +164,7 @@ export default function LiveStream({ post }: { post: Post }) {
             <Video
               key={peer.peerId}
               peerId={peer.peerId}
-              className="h-full w-full"
+              className="min-h-[400px] max-h-[500px] w-full"
             />
           );
         })}
