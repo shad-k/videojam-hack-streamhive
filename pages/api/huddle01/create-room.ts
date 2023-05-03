@@ -16,7 +16,8 @@ export default async function handler(
       "https://iriko.testing.huddle01.com/api/v1/create-room",
       {
         title: req.body.title,
-        description: req.body.description,
+        description:
+          req.body.description !== "" ? req.body.description : req.body.title,
         startTime: new Date(req.body.startTime),
         expiryTime: new Date(req.body.endTime),
         roomLock: false,
