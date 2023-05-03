@@ -245,7 +245,7 @@ export default function Dashboard() {
           )}
         </div>
       </div>
-      <div className="border border-slate-800 rounded-lg mt-8">
+      <div className="border border-slate-800 rounded-lg mt-8 pb-8">
         {!address ? (
           <h1 className="text-center text-3xl italic text-error">
             Please connect your wallet

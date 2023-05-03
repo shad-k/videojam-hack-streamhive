@@ -78,6 +78,8 @@ export default function SellerLandingPage() {
         name: (event.target as HTMLFormElement).userName.value,
         email: (event.target as HTMLFormElement).email.value,
       });
+
+      setUserExists(true);
     } catch (error) {
       window.alert(error);
     }

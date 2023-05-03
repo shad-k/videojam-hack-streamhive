@@ -14,7 +14,7 @@ export default function Card({ post }: { post: Post }) {
   }, [post]);
 
   return (
-    <div className="card h-[350px] w-64 bg-base-100 shadow-xl image-full">
+    <div className="card h-[350px] max-h-[350px] w-64 bg-base-100 shadow-xl image-full">
       <figure>
         <img
           className="h-full w-full object-fit object-center"
@@ -24,7 +24,7 @@ export default function Card({ post }: { post: Post }) {
           alt={post.title}
         />
       </figure>
-      <div className="card-body">
+      <div className="card-body p-4">
         <div className="flex items-center">
           <div className="h-10 w-10 rounded-full overflow-hidden">
             <Image
@@ -40,7 +40,7 @@ export default function Card({ post }: { post: Post }) {
           </span>
         </div>
         <h2 className="card-title">{post.title}</h2>
-        <p>{post.description}</p>
+        <p className="text-sm">{post.description}</p>
         <Link href={`/post/${post.playbackId}`}>
           <div className="card-actions">
             <button className="btn btn-primary">Watch</button>
