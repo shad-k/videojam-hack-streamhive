@@ -23,7 +23,9 @@ export default function Dashboard() {
     followingCount: number;
   }>();
   const [tokenAddress, setTokenAddress] = React.useState<string>();
-  const [totalSupply, setTotalSupply] = React.useState<BigNumber>();
+  const [totalSupply, setTotalSupply] = React.useState<BigNumber>(
+    BigNumber.from(0)
+  );
   const [creatingToken, setCreatingToken] = React.useState<boolean>(false);
 
   const [showPosts, setShowPosts] = React.useState<boolean>(true);
@@ -113,7 +115,7 @@ export default function Dashboard() {
   }, [contract, address]);
 
   React.useEffect(() => {
-    if (erc20Contract) {
+    if (tokenAddress && erc20Contract) {
       (async () => {
         try {
           const totalSupply = await erc20Contract.totalSupply();
@@ -123,7 +125,7 @@ export default function Dashboard() {
         }
       })();
     }
-  }, [erc20Contract]);
+  }, [erc20Contract, tokenAddress]);
 
   const launchToken = async (event: FormEvent) => {
     event.preventDefault();
