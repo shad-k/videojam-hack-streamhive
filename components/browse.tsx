@@ -14,7 +14,7 @@ export default function Browse() {
   return (
     <div className="w-full max-w-[1280px] mx-auto">
       <h1 className="my-8 text-3xl">Latest Posts</h1>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-3 space-y-4">
         {posts.map((post) => {
           return <Card key={post.postId} post={post} />;
         })}
