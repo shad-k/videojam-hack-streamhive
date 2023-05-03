@@ -49,13 +49,17 @@ export default function Dashboard() {
     if (isConnected && address) {
       setAvatar(new Identicon(address, 128).toString());
       (async () => {
-        const { user } = await fetch("/api/user", {
-          method: "POST",
-          body: JSON.stringify({
-            address,
-          }),
-        }).then((res) => res.json());
-        setUser(user);
+        try {
+          const { user } = await fetch("/api/user", {
+            method: "POST",
+            body: JSON.stringify({
+              address,
+            }),
+          }).then((res) => res.json());
+          setUser(user);
+        } catch (error) {
+          console.log(error);
+        }
       })();
     }
   }, [isConnected, address]);
@@ -111,8 +115,12 @@ export default function Dashboard() {
   React.useEffect(() => {
     if (erc20Contract) {
       (async () => {
-        const totalSupply = await erc20Contract.totalSupply();
-        setTotalSupply(totalSupply);
+        try {
+          const totalSupply = await erc20Contract.totalSupply();
+          setTotalSupply(totalSupply);
+        } catch (error) {
+          console.log(error);
+        }
       })();
     }
   }, [erc20Contract]);
@@ -173,6 +181,19 @@ export default function Dashboard() {
       await erc20Contract.transfer(address.trim(), parsedAmount);
     });
   };
+
+  if (isConnected && !user) {
+    return (
+      <div>
+        <h1 className="text-xl font-bold text-center mb-2">
+          Please join as seller
+        </h1>
+        <Link href="/sell" className="btn btn-info btn-lg">
+          Join as Seller
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-[1280px]">
