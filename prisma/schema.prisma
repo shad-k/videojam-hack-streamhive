@@ -42,7 +42,7 @@ model Session {
 model User {
   address        String    @unique
   name           String?
-  email          String?   @unique
+  email          String?
   accounts       Account[]
   sessions       Session[]
   followerCount  Int       @default(0)

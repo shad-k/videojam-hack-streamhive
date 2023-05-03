@@ -37,10 +37,12 @@ export default async function auth(req: any, res: any) {
           );
           const nextAuthUrl = new URL(process.env.NEXTAUTH_URL as string);
 
+          const nonce = await getCsrfToken({ req });
+
           const result = await siwe.verify({
             signature: credentials?.signature || "",
             domain: nextAuthUrl.host,
-            nonce: await getCsrfToken({ req }),
+            nonce,
           });
 
           let user = await prisma.user.findUnique({
@@ -50,13 +52,18 @@ export default async function auth(req: any, res: any) {
           });
 
           if (!user) {
-            user = await prisma.user.create({
-              data: {
-                name: credentials?.name,
-                email: credentials?.email,
-                address: siwe.address,
-              },
-            });
+            try {
+              user = await prisma.user.create({
+                data: {
+                  name: credentials?.name,
+                  email: credentials?.email,
+                  address: siwe.address,
+                },
+              });
+            } catch (error) {
+              console.log({ error });
+            }
+
             // create account
             await prisma.account.create({
               data: {
